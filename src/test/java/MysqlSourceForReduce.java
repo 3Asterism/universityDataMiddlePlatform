@@ -1,6 +1,7 @@
 import com.akisan.universityDataMiddlePlatform.entity.test_flink;
 import com.akisan.universityDataMiddlePlatform.util.readMysql;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
@@ -26,7 +27,13 @@ public class MysqlSourceForReduce {
         });
 
         //reduce
-        test_flinkDataStream.keyBy(test_flink::getName).sum("age").print();
+        test_flinkDataStream.keyBy(test_flink::getName).reduce(new ReduceFunction<test_flink>() {
+            @Override
+            public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
+                test_flink.setAge(test_flink.getAge()+t1.getAge());
+                return test_flink;
+            }
+        }).print();
 
         env.execute();
     }
