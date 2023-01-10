@@ -1,5 +1,5 @@
 import com.akisan.universityDataMiddlePlatform.entity.test_flink;
-import com.akisan.universityDataMiddlePlatform.util.readMysql;
+import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -11,7 +11,7 @@ public class MysqlSourceForReduce {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(8);
-        readMysql readMysql = new readMysql();
+        readAndSinkMysql readMysql = new readAndSinkMysql();
         //获取数据源
         DataStream<Row> input1 = env.createInput(readMysql.testInput());
 
@@ -28,7 +28,7 @@ public class MysqlSourceForReduce {
         });
 
 
-        //reduce
+        //Aggregation reduce
         SingleOutputStreamOperator<test_flink> reduce = test_flinkDataStream.keyBy(test_flink::getName).reduce(new ReduceFunction<test_flink>() {
             @Override
             public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
@@ -36,13 +36,31 @@ public class MysqlSourceForReduce {
                 return test_flink;
             }
         });
-        reduce.keyBy(test_flink -> "key").reduce(new ReduceFunction<test_flink>() {
+        SingleOutputStreamOperator<test_flink> result = reduce.keyBy(test_flink -> "key").reduce(new ReduceFunction<test_flink>() {
             @Override
             public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
                 return test_flink.getAge() > t1.getAge() ? test_flink : t1;
             }
-        }).print();
+        });
+        result.print();
 
+        //Ready to sink
+        DataStream<Row> resultSink = result.map(new MapFunction<test_flink, Row>() {
+            @Override
+            public Row map(test_flink test_flink) throws Exception {
+                Row row = new Row(3);
+                row.setField(0, test_flink.getId());
+                row.setField(1, test_flink.getName());
+                row.setField(2, test_flink.getAge());
+                return row;
+            }
+        });
+
+        readAndSinkMysql sinkMysql = new readAndSinkMysql();
+
+        String query = "INSERT INTO test_maxwell.test_flinksink (id, name, age) VALUES (?, ?, ?)";
+
+        resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));
         env.execute();
     }
 }
