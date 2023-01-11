@@ -1,5 +1,6 @@
 import com.akisan.universityDataMiddlePlatform.entity.test_flink;
 import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -36,16 +37,24 @@ public class MysqlSourceForReduce {
                 return test_flink;
             }
         });
+
         SingleOutputStreamOperator<test_flink> result = reduce.keyBy(test_flink -> "key").reduce(new ReduceFunction<test_flink>() {
             @Override
             public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
-                return test_flink.getAge() > t1.getAge() ? test_flink : t1;
+                return test_flink.getAge() >= t1.getAge() ? test_flink : t1;
             }
         });
-        result.print();
+
+        //filter
+        SingleOutputStreamOperator<test_flink> filter = result.filter(new FilterFunction<test_flink>() {
+            @Override
+            public boolean filter(test_flink test_flink) throws Exception {
+                return test_flink.getAge() >= 8;
+            }
+        });
 
         //Ready to sink
-        DataStream<Row> resultSink = result.map(new MapFunction<test_flink, Row>() {
+        DataStream<Row> resultSink = filter.map(new MapFunction<test_flink, Row>() {
             @Override
             public Row map(test_flink test_flink) throws Exception {
                 Row row = new Row(3);
@@ -60,6 +69,7 @@ public class MysqlSourceForReduce {
 
         String query = "INSERT INTO test_maxwell.test_flinksink (id, name, age) VALUES (?, ?, ?)";
 
+        //Sink
         resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));
         env.execute();
     }
