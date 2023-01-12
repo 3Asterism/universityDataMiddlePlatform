@@ -1,14 +1,15 @@
 import com.akisan.universityDataMiddlePlatform.entity.test_flink;
 import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
-import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.types.Row;
 
-public class MysqlSourceForReduce {
+public class MysqlSourceForWindow {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(8);
@@ -28,9 +29,8 @@ public class MysqlSourceForReduce {
             }
         });
 
-
-        //Aggregation reduce
-        SingleOutputStreamOperator<test_flink> reduce = test_flinkDataStream.keyBy(test_flink::getName).reduce(new ReduceFunction<test_flink>() {
+        //window assigner && window function
+        SingleOutputStreamOperator<test_flink> reduce = test_flinkDataStream.keyBy(test_flink::getName).window(EventTimeSessionWindows.withGap(Time.seconds(2))).reduce(new ReduceFunction<test_flink>() {
             @Override
             public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
                 test_flink.setAge(test_flink.getAge() + t1.getAge());
@@ -38,23 +38,8 @@ public class MysqlSourceForReduce {
             }
         });
 
-        SingleOutputStreamOperator<test_flink> result = reduce.keyBy(test_flink -> "key").reduce(new ReduceFunction<test_flink>() {
-            @Override
-            public test_flink reduce(test_flink test_flink, test_flink t1) throws Exception {
-                return test_flink.getAge() >= t1.getAge() ? test_flink : t1;
-            }
-        });
-
-        //filters
-        SingleOutputStreamOperator<test_flink> filter = result.filter(new FilterFunction<test_flink>() {
-            @Override
-            public boolean filter(test_flink test_flink) throws Exception {
-                return test_flink.getAge() > 8;
-            }
-        });
-
         //Ready to sink
-        DataStream<Row> resultSink = filter.map(new MapFunction<test_flink, Row>() {
+        DataStream<Row> resultSink = reduce.map(new MapFunction<test_flink, Row>() {
             @Override
             public Row map(test_flink test_flink) throws Exception {
                 Row row = new Row(3);
@@ -72,5 +57,8 @@ public class MysqlSourceForReduce {
         //Sink
         resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));
         env.execute();
+
     }
+
+
 }
