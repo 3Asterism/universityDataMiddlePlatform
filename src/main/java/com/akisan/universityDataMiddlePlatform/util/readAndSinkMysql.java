@@ -14,7 +14,7 @@ public class readAndSinkMysql {
                 .setUsername("root")
                 .setPassword("123456")
                 .setDBUrl("jdbc:mysql://localhost:3306/test_maxwell?serverTimezone=GMT%2b8")
-                .setQuery("select * from test_flink")
+                .setQuery("select * from std_score")
                 //设置获取的数据的类型
                 .setRowTypeInfo(new RowTypeInfo(BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO,BasicTypeInfo.INT_TYPE_INFO))
                 .finish();
