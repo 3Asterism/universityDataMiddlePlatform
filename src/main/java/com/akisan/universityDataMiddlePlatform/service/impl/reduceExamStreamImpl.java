@@ -21,8 +21,8 @@ public class reduceExamStreamImpl implements reduceExamStream {
     @Override
     public void reduceExamStream() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //设置并行数为8
-        env.setParallelism(8);
+        //设置并行数为4
+        env.setParallelism(4);
         readAndSinkMysql readMysql = new readAndSinkMysql();
         //获取数据源
         DataStream<Row> input1 = env.createInput(readMysql.testInput());
@@ -37,7 +37,7 @@ public class reduceExamStreamImpl implements reduceExamStream {
                         (String) row.getField(2),
                         (String) row.getField(3),
                         (Integer) row.getField(4),
-                        (Integer) row.getField(5)
+                        (Integer) 0
                 );
             }
         });
@@ -68,12 +68,13 @@ public class reduceExamStreamImpl implements reduceExamStream {
         DataStream<std_info> result = reduce.map(new MapFunction<std_examCount, std_info>() {
             @Override
             public std_info map(std_examCount stdExamCount) throws Exception {
+                String stringScore = Integer.toString(stdExamCount.getScore());
                 return new std_info(
                         (Integer) stdExamCount.getStdid(),
                         (String) stdExamCount.getName(),
                         (String) null,
                         (String) null,
-                        (String) String.valueOf(stdExamCount.getScore()),
+                        (String) stringScore,
                         (String) null
                 );
             }

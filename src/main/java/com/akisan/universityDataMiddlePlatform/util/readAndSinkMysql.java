@@ -12,11 +12,11 @@ public class readAndSinkMysql {
         JDBCInputFormat input = new JDBCInputFormat.JDBCInputFormatBuilder()
                 .setDrivername("com.mysql.cj.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("123456")
+                .setPassword("baicaiin33")
                 .setDBUrl("jdbc:mysql://localhost:3306/test_maxwell?serverTimezone=GMT%2b8")
-                .setQuery("select * from std_score")
+                .setQuery("select * from std_exam")
                 //设置获取的数据的类型
-                .setRowTypeInfo(new RowTypeInfo(BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO,BasicTypeInfo.INT_TYPE_INFO))
+                .setRowTypeInfo(new RowTypeInfo(BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO,BasicTypeInfo.INT_TYPE_INFO))
                 .finish();
         return input;
     }
@@ -25,7 +25,7 @@ public class readAndSinkMysql {
         JDBCOutputFormat jdbcOutput = JDBCOutputFormat.buildJDBCOutputFormat()
                 .setDrivername("com.mysql.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("123456")
+                .setPassword("baicaiin33")
                 .setDBUrl("jdbc:mysql://localhost:3306/test_maxwell?serverTimezone=GMT%2b8")
                 .setQuery(query)
                 .finish();
