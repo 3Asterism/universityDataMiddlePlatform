@@ -37,44 +37,41 @@ public class reduceExamStreamImpl implements reduceExamStream {
                         (String) row.getField(2),
                         (String) row.getField(3),
                         (Integer) row.getField(4),
-                        (Integer) 0
+                        (Integer) 1
                 );
             }
         });
 
         //window assigner && window function
         //求分数总和
-        SingleOutputStreamOperator<std_examCount> reduceAvg = test_flinkDataStream.keyBy(std_examCount::getName).window(EventTimeSessionWindows.withGap(Time.seconds(2))).reduce(new ReduceFunction<std_examCount>() {
+        SingleOutputStreamOperator<std_examCount> reduce = test_flinkDataStream.keyBy(std_examCount::getName).window(EventTimeSessionWindows.withGap(Time.seconds(2))).reduce(new ReduceFunction<std_examCount>() {
             @Override
             public std_examCount reduce(std_examCount std_examCount, std_examCount t1) throws Exception {
                 std_examCount.setScore(std_examCount.getScore() + t1.getScore());
                 //计算该人考试出现次数
-                std_examCount.setCount(std_examCount.getScore()+1);
+                std_examCount.setCount(std_examCount.getCount() + t1.getCount());
                 return std_examCount;
             }
         });
 
-        //求平均值
-        SingleOutputStreamOperator<std_examCount> reduce =  reduceAvg.keyBy(std_examCount::getName).window(EventTimeSessionWindows.withGap(Time.seconds(2))).reduce(new ReduceFunction<std_examCount>() {
-            @Override
-            public std_examCount reduce(std_examCount std_exam, std_examCount t1) throws Exception {
-                //总数除出现次数得平均数
-                std_exam.setScore((std_exam.getScore() + t1.getScore())/t1.getCount());
-                return std_exam;
-            }
-        });
 
         //归约为可下沉类型
         DataStream<std_info> result = reduce.map(new MapFunction<std_examCount, std_info>() {
             @Override
             public std_info map(std_examCount stdExamCount) throws Exception {
-                String stringScore = Integer.toString(stdExamCount.getScore());
+                int avgScore = stdExamCount.getScore()/stdExamCount.getCount();
+                String ifPass;
+                if(avgScore >=60){
+                    ifPass = "Pass";
+                }else{
+                    ifPass = "Fail";
+                }
                 return new std_info(
                         (Integer) stdExamCount.getStdid(),
                         (String) stdExamCount.getName(),
                         (String) null,
                         (String) null,
-                        (String) stringScore,
+                        (String) ifPass,
                         (String) null
                 );
             }

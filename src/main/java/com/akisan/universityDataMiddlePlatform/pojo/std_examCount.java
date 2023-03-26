@@ -25,5 +25,5 @@ public class std_examCount {
     private Integer score;
 
     @ApiModelProperty(value = "计数")
-    private Integer count = 0;
+    private Integer count;
 }
