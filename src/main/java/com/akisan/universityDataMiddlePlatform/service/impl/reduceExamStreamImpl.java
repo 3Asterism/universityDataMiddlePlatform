@@ -94,7 +94,7 @@ public class reduceExamStreamImpl implements reduceExamStream {
 
         readAndSinkMysql sinkMysql = new readAndSinkMysql();
 
-        String query = "INSERT INTO test_maxwell.std_info (id, name, classname, inschool, passrate, actvrate) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO testdb.std_info (id, name, classname, inschool, passrate, actvrate) VALUES (?, ?, ?, ?, ?, ?)";
 
         //Sink
         resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));
