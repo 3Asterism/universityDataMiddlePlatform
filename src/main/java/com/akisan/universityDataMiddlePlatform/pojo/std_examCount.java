@@ -24,6 +24,9 @@ public class std_examCount {
     @ApiModelProperty(value = "考试分数")
     private Integer score;
 
+    @ApiModelProperty(value = "学生所在学院")
+    private String academy;
+
     @ApiModelProperty(value = "计数")
     private Integer count;
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@ApiModel(description = "学生 - 详细信息表")
+@ApiModel(description = "学生 - 详细信息结果表")
 @NoArgsConstructor
 @AllArgsConstructor
 public class std_info {

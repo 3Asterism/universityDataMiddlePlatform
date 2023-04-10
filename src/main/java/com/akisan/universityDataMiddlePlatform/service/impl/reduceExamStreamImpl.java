@@ -37,6 +37,7 @@ public class reduceExamStreamImpl implements reduceExamStream {
                         (String) row.getField(2),
                         (String) row.getField(3),
                         (Integer) row.getField(4),
+                        (String) row.getField(5),
                         (Integer) 1
                 );
             }
