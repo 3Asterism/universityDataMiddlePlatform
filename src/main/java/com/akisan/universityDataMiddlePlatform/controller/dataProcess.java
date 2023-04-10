@@ -1,6 +1,7 @@
 package com.akisan.universityDataMiddlePlatform.controller;
 
 import com.akisan.universityDataMiddlePlatform.service.impl.reduceActvStreamImpl;
+import com.akisan.universityDataMiddlePlatform.service.impl.reduceBarStreamImpl;
 import com.akisan.universityDataMiddlePlatform.service.impl.reduceExamStreamImpl;
 import com.akisan.universityDataMiddlePlatform.common.resultForRequestConstant;
 import io.swagger.annotations.Api;
@@ -18,6 +19,8 @@ public class dataProcess {
     reduceExamStreamImpl reduceExamStreamImpl;
     @Autowired
     reduceActvStreamImpl reduceActvStreamImpl;
+    @Autowired
+    reduceBarStreamImpl reduceBarStreamImpl;
 
     @PostMapping("/processTestData")
     @ApiOperation(value = "处理考试数据")
@@ -30,6 +33,13 @@ public class dataProcess {
     @ApiOperation(value = "处理活动数据")
     public resultForRequestConstant processActvData() throws Exception {
         reduceActvStreamImpl.reduceActvStream();
+        return resultForRequestConstant.success();
+    }
+
+    @PostMapping("/processBarData")
+    @ApiOperation(value = "处理大屏条形数据")
+    public resultForRequestConstant processBarData() throws Exception {
+        reduceBarStreamImpl.reduceBarStream();
         return resultForRequestConstant.success();
     }
 
