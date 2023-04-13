@@ -1,6 +1,7 @@
 package com.akisan.universityDataMiddlePlatform.service.impl;
 
 import com.akisan.universityDataMiddlePlatform.entity.std_scorebar;
+import com.akisan.universityDataMiddlePlatform.mapper.std_scorebarMapper;
 import com.akisan.universityDataMiddlePlatform.pojo.std_examCount;
 import com.akisan.universityDataMiddlePlatform.service.reduceBarStream;
 import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
@@ -12,12 +13,18 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.types.Row;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class reduceBarStreamImpl implements reduceBarStream {
+    @Autowired
+    private std_scorebarMapper stdScorebarMapper;
     @Override
+    @Scheduled(cron = "0 46 16 * * *")
     public void reduceBarStream() throws Exception {
+        stdScorebarMapper.deleteStdScoreAlarm();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         //设置并行数为4
         env.setParallelism(4);
