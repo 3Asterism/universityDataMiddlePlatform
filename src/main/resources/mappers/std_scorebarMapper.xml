@@ -7,8 +7,8 @@
         <result column="academy" property="academy"/>
     </resultMap>
 
-    <update id="deleteStdScoreAlarm" >
-        TRUNCATE TABLE std_scorebar
+    <update id="deleteStdScoreAlarm">
+        TRUNCATE TABLE std_actvalarm
     </update>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.akisan.universityDataMiddlePlatform.service.impl;
 
 import com.akisan.universityDataMiddlePlatform.entity.std_info;
+import com.akisan.universityDataMiddlePlatform.mapper.std_infoMapper;
 import com.akisan.universityDataMiddlePlatform.pojo.std_examCount;
 import com.akisan.universityDataMiddlePlatform.service.reduceExamStream;
 import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
@@ -12,14 +13,20 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.types.Row;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 //处理std_exam中的数据 输出及格率
 @Service
 public class reduceExamStreamImpl implements reduceExamStream {
+    @Autowired
+    private std_infoMapper std_infoMapper;
 
+    @Scheduled(cron = "0 13 17 * * *")
     @Override
     public void reduceExamStream() throws Exception {
+        std_infoMapper.deleteStdScoreAlarm();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         //设置并行数为4
         env.setParallelism(4);

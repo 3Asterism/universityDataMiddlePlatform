@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class reduceBarStreamImpl implements reduceBarStream {
     @Autowired
     private std_scorebarMapper stdScorebarMapper;
+
     @Override
     @Scheduled(cron = "0 46 16 * * *")
     public void reduceBarStream() throws Exception {

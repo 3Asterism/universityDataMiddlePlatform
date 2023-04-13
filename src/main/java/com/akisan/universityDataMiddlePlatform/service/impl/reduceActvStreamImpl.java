@@ -1,6 +1,7 @@
 package com.akisan.universityDataMiddlePlatform.service.impl;
 
 import com.akisan.universityDataMiddlePlatform.entity.std_actvalarm;
+import com.akisan.universityDataMiddlePlatform.mapper.std_actvalarmMapper;
 import com.akisan.universityDataMiddlePlatform.pojo.std_actvCount;
 import com.akisan.universityDataMiddlePlatform.service.reduceActvStream;
 import com.akisan.universityDataMiddlePlatform.util.readAndSinkMysql;
@@ -12,13 +13,19 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.types.Row;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class reduceActvStreamImpl implements reduceActvStream {
+    @Autowired
+    private std_actvalarmMapper stdActvalarmMapper;
 
     @Override
+    @Scheduled(cron = "0 12 17 * * *")
     public void reduceActvStream() throws Exception {
+        stdActvalarmMapper.deleteResult();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         //设置并行数为4
         env.setParallelism(4);
