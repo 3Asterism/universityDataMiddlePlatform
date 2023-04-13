@@ -6,6 +6,6 @@ _____________  ____   __| _/_ __   ____  ____   \_ |__ ___.__.        /  _  \ | 
 |   __/|__|   \____/\____ |____/  \___  >___  >  |___  / ____|      \____|__  /__|_ \__|
 |__|                     \/           \/    \/       \/\/               \/     \/
 
-${AnsiColor.BRIGHT_RED}
+${AnsiColor.BRIGHT_YELLOW}
 Application Version: ${application.version}${application.formatted-version}
 Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
