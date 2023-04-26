@@ -76,7 +76,9 @@ public class reduceActvStreamImpl implements reduceActvStream {
                         (Integer) null,
                         (Integer) std_actvCount.getStdid(),
                         (String) std_actvCount.getName(),
-                        (Integer) ifAttempt
+                        (Integer) ifAttempt,
+                        //报警原因写死
+                        (String) "活动参加次数不足"
                 );
             }
         });
@@ -85,18 +87,19 @@ public class reduceActvStreamImpl implements reduceActvStream {
         DataStream<Row> resultSink = result.map(new MapFunction<std_actvalarm, Row>() {
             @Override
             public Row map(std_actvalarm std_actvalarm) throws Exception {
-                Row row = new Row(4);
+                Row row = new Row(5);
                 row.setField(0, std_actvalarm.getId());
                 row.setField(1, std_actvalarm.getStdid());
                 row.setField(2, std_actvalarm.getName());
                 row.setField(3, std_actvalarm.getIfattempt());
+                row.setField(4, std_actvalarm.getResult());
                 return row;
             }
         });
 
         readAndSinkMysql sinkMysql = new readAndSinkMysql();
 
-        String query = "INSERT INTO testdb.std_actvalarm (id, stdid, name, ifattempt) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO testdb.std_actvalarm (id, stdid, name, ifattempt, result) VALUES (?, ?, ?, ?, ?)";
 
         //Sink
         resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));

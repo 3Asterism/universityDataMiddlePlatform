@@ -80,7 +80,8 @@ public class reduceExamStreamImpl implements reduceExamStream {
                         (String) null,
                         (String) null,
                         (String) ifPass,
-                        (String) null
+                        (String) null,
+                        (String) "考试平均分不达标"
                 );
             }
         });
@@ -89,20 +90,21 @@ public class reduceExamStreamImpl implements reduceExamStream {
         DataStream<Row> resultSink = result.map(new MapFunction<std_info, Row>() {
             @Override
             public Row map(std_info std_info) throws Exception {
-                Row row = new Row(6);
+                Row row = new Row(7);
                 row.setField(0, std_info.getId());
                 row.setField(1, std_info.getName());
                 row.setField(2, std_info.getClassname());
                 row.setField(3, std_info.getInschool());
                 row.setField(4, std_info.getPassrate());
                 row.setField(5, std_info.getActvrate());
+                row.setField(6, std_info.getResult());
                 return row;
             }
         });
 
         readAndSinkMysql sinkMysql = new readAndSinkMysql();
 
-        String query = "INSERT INTO testdb.std_info (id, name, classname, inschool, passrate, actvrate) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO testdb.std_info (id, name, classname, inschool, passrate, actvrate, result) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         //Sink
         resultSink.writeUsingOutputFormat(sinkMysql.testOutput(query));

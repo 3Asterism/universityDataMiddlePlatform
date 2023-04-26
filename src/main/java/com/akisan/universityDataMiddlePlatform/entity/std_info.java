@@ -29,4 +29,7 @@ public class std_info {
     @ApiModelProperty(value = "学生活动参与率")
     private String actvrate;
 
+    @ApiModelProperty(value = "报警原因")
+    private String result;
+
 }

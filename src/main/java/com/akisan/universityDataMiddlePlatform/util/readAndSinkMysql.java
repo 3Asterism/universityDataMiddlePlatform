@@ -12,8 +12,8 @@ public class readAndSinkMysql {
         JDBCInputFormat input = new JDBCInputFormat.JDBCInputFormatBuilder()
                 .setDrivername("com.mysql.cj.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("123456")
-                .setDBUrl("jdbc:mysql://localhost:3306/testdb?serverTimezone=GMT%2b8")
+                .setPassword("!Baicaiin33")
+                .setDBUrl("jdbc:mysql://47.100.215.126:3306/testdb?characterEncoding=utf8")
                 .setQuery("select * from std_exam")
                 //设置获取的数据的类型
                 .setRowTypeInfo(new RowTypeInfo(BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO, BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO))
@@ -25,8 +25,8 @@ public class readAndSinkMysql {
         JDBCOutputFormat jdbcOutput = JDBCOutputFormat.buildJDBCOutputFormat()
                 .setDrivername("com.mysql.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("123456")
-                .setDBUrl("jdbc:mysql://localhost:3306/testdb?serverTimezone=GMT%2b8")
+                .setPassword("!Baicaiin33")
+                .setDBUrl("jdbc:mysql://47.100.215.126:3306/testdb?characterEncoding=utf8")
                 .setQuery(query)
                 .finish();
         return jdbcOutput;
@@ -36,8 +36,8 @@ public class readAndSinkMysql {
         JDBCInputFormat input = new JDBCInputFormat.JDBCInputFormatBuilder()
                 .setDrivername("com.mysql.cj.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("123456")
-                .setDBUrl("jdbc:mysql://localhost:3306/testdb?serverTimezone=GMT%2b8")
+                .setPassword("!Baicaiin33")
+                .setDBUrl("jdbc:mysql://47.100.215.126:3306/testdb?characterEncoding=utf8")
                 .setQuery("select * from std_actv")
                 //设置获取的数据的类型
                 .setRowTypeInfo(new RowTypeInfo(BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.INT_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO, BasicTypeInfo.STRING_TYPE_INFO,BasicTypeInfo.INT_TYPE_INFO))
